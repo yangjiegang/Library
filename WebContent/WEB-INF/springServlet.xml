@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
+
+<context:component-scan base-package="com.library.dao, com.library.action, com.library.bean"></context:component-scan>
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+	<property name="url" value="jdbc:mysql://localhost:3306/spring"></property>
+	<property name="username" value="alex"></property>
+	<property name="password" value="123"></property>
+</bean>
+
+<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	<property name="dataSource" ref="dataSource"></property>
+</bean>
+
+<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"></property>
+</bean>
+
+<aop:config>
+	<aop:pointcut expression="execution(* com.library.dao.*DAO.*(..))" id="serviceMethod"/>
+	<aop:advisor pointcut-ref="serviceMethod" advice-ref="txAdvice"/>
+</aop:config>
+
+<tx:advice id="txAdvice" transaction-manager="txManager">
+	<tx:attributes>
+		<tx:method name="*" read-only="false" rollback-for="Exception"/>
+	</tx:attributes>
+</tx:advice>
+
+<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	<property name="prefix" value="/pages/"></property>
+	<property name="suffix" value=".jsp"></property>
+</bean>
+
+<!-- <bean id="bookBean" class="com.library.bean.Book"></bean>
+<bean id="bookDAO" class="com.library.dao.BookDAO"></bean>
+<bean id="userBean" class="com.library.bean.User"></bean>
+<bean id="userDAO" class="com.library.dao.UserDAO"></bean> -->
+
+<bean id="mappingJacksonHttpMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+<property name="supportedMediaTypes">
+<list>
+<value>text/html;charset=utf-8</value>
+<value>application/json;charset=utf-8</value>
+</list>
+</property>
+</bean>
+
+<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+ <property name="messageConverters">
+ <list>
+ <ref local="mappingJacksonHttpMessageConverter"/>
+ </list>
+ </property>
+</bean>
+
+<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	<property name="defaultEncoding" value="utf-8"></property>
+	<property name="maxUploadSize" value="5242800"></property>
+	<property name="uploadTempDir" value="/upload/tmp/"></property>
+</bean>
+
+<mvc:interceptors>
+<mvc:interceptor>
+<mvc:mapping path="/**"/>
+<bean class="com.library.interceptor.LoginInterceptor"></bean>
+</mvc:interceptor>
+</mvc:interceptors>
+</beans>

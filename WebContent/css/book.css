@@ -1,0 +1,52 @@
+#options{
+	list-style:none;
+	margin:10px;
+}
+#options>li{
+	font:20px black YaHei;
+	width:80%;
+	height:30px;
+}
+div#main{
+	width:100%;
+	margin:10px;
+}
+div#main>ul{
+	list-style:none;
+}
+div#main>ul>li{
+	height:30px;
+}
+div#main>ul:hover{
+	
+}
+table{
+	width:80%;
+	height:80%;
+}
+/* #bookList{
+	margin:20px auto;
+	border:1px solid rgb(0,0,0);
+	font: 20px blue YaHei; 
+} */
+#bookListUl>li{
+	list-style:none;
+}
+
+#bookListUl>li>a.data{
+	target:_self;
+}
+#pagerNav>ul{
+	list-style:none;
+}
+li.pager{
+	list-style:none;
+	height:30px;
+	width:30px;
+	float:left;
+	border:1px solid black;
+	margin:5px;
+	cursor:pointer;
+	text-align:center;
+	font:0.8em black YaHei; 
+}
